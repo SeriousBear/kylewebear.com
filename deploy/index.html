@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notes — Deploying kylewebear.com</title>
+<meta name="description" content="A bear-friendly walkthrough for getting kylewebear.com live via GitHub and Netlify.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream: #f3ecdc;
+    --cream-2: #ece4cf;
+    --paper: #faf5e8;
+    --moss: #2d4a2b;
+    --moss-deep: #1f3520;
+    --sage: #8a9a7b;
+    --sage-soft: #c5cdb4;
+    --amber: #c8842c;
+    --amber-deep: #9a5d1c;
+    --bark: #3d2e1f;
+    --ink: #1d1a14;
+    --rule: rgba(29, 26, 20, 0.18);
+    --warning: #b85c1e;
+    --terminal-bg: #1a1f1a;
+    --terminal-text: #d8d4c4;
+    --terminal-comment: #7a8a76;
+    --terminal-prompt: #c8a468;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.32;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ---------- HEADER ---------- */
+  header.cover {
+    padding: 100px 0 60px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 60px;
+    position: relative;
+  }
+  .cover-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cover-tag .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+
+  h1.cover-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+    font-weight: 500;
+    font-size: clamp(48px, 8vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  h1.cover-title em {
+    font-style: italic;
+    color: var(--moss);
+  }
+
+  .cover-sub {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--bark);
+    max-width: 620px;
+  }
+
+  .cover-meta {
+    margin-top: 40px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--moss);
+  }
+  .cover-meta span { display: flex; align-items: center; gap: 8px; }
+  .cover-meta svg { color: var(--amber-deep); }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 32px 36px;
+    margin-bottom: 80px;
+    border-radius: 4px;
+  }
+  .toc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 18px;
+    display: block;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc li {
+    counter-increment: toc;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rule);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .toc li:last-child { border-bottom: 0; }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber-deep);
+    flex-shrink: 0;
+    width: 24px;
+  }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 24, 'SOFT' 50;
+    font-size: 19px;
+    transition: color 0.2s ease;
+    flex: 1;
+  }
+  .toc a:hover { color: var(--moss); }
+  .toc .dur {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--sage);
+    flex-shrink: 0;
+  }
+
+  /* ---------- CHAPTERS ---------- */
+  section.chapter {
+    margin-bottom: 100px;
+    scroll-margin-top: 24px;
+  }
+  .chapter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 16px;
+    display: block;
+  }
+  h2.chapter-title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 80, 'WONK' 1;
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  h2.chapter-title em {
+    font-style: italic;
+    color: var(--moss);
+  }
+  .chapter-intro {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--bark);
+    margin-bottom: 36px;
+    max-width: 720px;
+  }
+
+  /* Body content */
+  .chapter p {
+    margin-bottom: 18px;
+    color: var(--ink);
+    max-width: 720px;
+  }
+  .chapter h3 {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'SOFT' 60;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 40px 0 16px;
+    color: var(--moss);
+  }
+  .chapter ul, .chapter ol {
+    margin: 0 0 20px 24px;
+    max-width: 720px;
+  }
+  .chapter li { margin-bottom: 8px; }
+  .chapter strong { color: var(--moss-deep); font-weight: 600; }
+  .chapter a { color: var(--amber-deep); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .chapter a:hover { color: var(--moss); }
+  code.inline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--paper);
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    color: var(--moss-deep);
+  }
+
+  /* Step numbers */
+  .step {
+    margin: 36px 0;
+    padding-left: 56px;
+    position: relative;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    counter-increment: step;
+    position: absolute;
+    left: 0; top: -2px;
+    width: 38px;
+    height: 38px;
+    background: var(--moss);
+    color: var(--cream);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .step h3 {
+    margin-top: 0;
+    font-size: 22px;
+  }
+  .chapter { counter-reset: step; }
+
+  /* ---------- TERMINAL ---------- */
+  .terminal {
+    background: var(--terminal-bg);
+    border-radius: 6px;
+    margin: 24px 0;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.4);
+    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+  .terminal-bar {
+    background: rgba(255,255,255,0.04);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .term-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+  }
+  .term-dot.r { background: #ec6a5e; }
+  .term-dot.y { background: #f5bf4f; }
+  .term-dot.g { background: #62c554; }
+  .terminal-bar .term-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--terminal-comment);
+    letter-spacing: 0.05em;
+  }
+  .copy-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--terminal-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .copy-btn:hover {
+    background: rgba(200, 132, 44, 0.15);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .copy-btn.copied {
+    background: rgba(98, 197, 84, 0.15);
+    border-color: #62c554;
+    color: #62c554;
+  }
+  .terminal-body {
+    padding: 18px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--terminal-text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .terminal-body .prompt { color: var(--terminal-prompt); user-select: none; }
+  .terminal-body .comment { color: var(--terminal-comment); font-style: italic; }
+  .terminal-body .out { color: rgba(216, 212, 196, 0.6); }
+
+  /* ---------- CALLOUTS ---------- */
+  .callout {
+    margin: 28px 0;
+    padding: 22px 26px 22px 64px;
+    border-radius: 6px;
+    position: relative;
+    max-width: 720px;
+  }
+  .callout::before {
+    position: absolute;
+    left: 22px;
+    top: 22px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .callout p { margin-bottom: 8px; max-width: none; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 600;
+  }
+
+  .callout.tip {
+    background: rgba(138, 154, 123, 0.18);
+    border-left: 3px solid var(--moss);
+  }
+  .callout.tip::before { content: '⌬'; background: var(--moss); color: var(--cream); }
+  .callout.tip .label { color: var(--moss-deep); }
+
+  .callout.warn {
+    background: rgba(184, 92, 30, 0.13);
+    border-left: 3px solid var(--warning);
+  }
+  .callout.warn::before { content: '!'; background: var(--warning); color: var(--cream); }
+  .callout.warn .label { color: var(--warning); }
+
+  .callout.fix {
+    background: rgba(200, 132, 44, 0.12);
+    border-left: 3px solid var(--amber);
+  }
+  .callout.fix::before { content: '⚒'; background: var(--amber); color: var(--cream); font-size: 14px; }
+  .callout.fix .label { color: var(--amber-deep); }
+
+  /* ---------- COMMAND TABLE (the cheat sheet) ---------- */
+  .cheatsheet {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 32px;
+    margin: 32px 0;
+  }
+  .cheat-group {
+    margin-bottom: 28px;
+  }
+  .cheat-group:last-child { margin-bottom: 0; }
+  .cheat-group h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cheat-row {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    padding: 10px 0;
+    align-items: baseline;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .cheat-row:last-child { border-bottom: 0; }
+  .cheat-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--moss-deep);
+    background: rgba(45, 74, 43, 0.06);
+    padding: 4px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+  .cheat-desc {
+    font-size: 15px;
+    color: var(--bark);
+    line-height: 1.45;
+  }
+
+  @media (max-width: 720px) {
+    .cheat-row { grid-template-columns: 1fr; gap: 6px; }
+    .cheat-cmd { font-size: 12px; }
+  }
+
+  /* ---------- DETAILS / TROUBLESHOOTING ---------- */
+  details.problem {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--amber);
+    border-radius: 4px;
+    padding: 0;
+    margin: 16px 0;
+    max-width: 720px;
+    overflow: hidden;
+  }
+  details.problem summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 24, 'SOFT' 60;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s ease;
+  }
+  details.problem summary::-webkit-details-marker { display: none; }
+  details.problem summary::before {
+    content: '+';
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--amber-deep);
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    line-height: 1;
+  }
+  details.problem[open] summary::before {
+    transform: rotate(45deg);
+  }
+  details.problem summary:hover {
+    background: rgba(200, 132, 44, 0.06);
+  }
+  details.problem .problem-body {
+    padding: 0 20px 20px 52px;
+    font-size: 16px;
+    color: var(--bark);
+  }
+  details.problem .problem-body p { max-width: none; margin-bottom: 12px; }
+  details.problem .problem-body code.inline { background: var(--cream-2); }
+
+  /* ---------- DIVIDER ORNAMENT ---------- */
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 60px 0;
+    color: var(--moss);
+    opacity: 0.5;
+  }
+  .ornament .line {
+    width: 60px; height: 1px;
+    background: currentColor;
+  }
+  .ornament svg { color: var(--moss); }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    background: var(--moss-deep);
+    color: var(--sage-soft);
+    padding: 50px 0 40px;
+    margin-top: 80px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+  }
+  footer .amber { color: var(--amber); }
+
+  ::selection { background: var(--amber); color: var(--cream); }
+
+  /* small accessibility — focus rings */
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <div class="cover-tag">
+      <span class="dot"></span>
+      Field Notes № 02 · Deployment
+    </div>
+    <h1 class="cover-title">From <em>local file</em><br>to live website.</h1>
+    <p class="cover-sub">A start-to-finish walkthrough for getting <code class="inline" style="font-size:0.75em">kylewebear.com</code> online via GitHub and Netlify — plus the things that'll trip you up, and a terminal cheat sheet for when you forget which command does what.</p>
+
+    <div class="cover-meta">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ~30 min read · ~60 min to do
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        6 chapters
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        Terminal-friendly
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ TABLE OF CONTENTS ============ -->
+<nav class="toc" aria-label="Table of contents">
+  <span class="toc-label">What's in here</span>
+  <ol>
+    <li><a href="#prep">Prep work — accounts &amp; tools</a><span class="dur">~10 min</span></li>
+    <li><a href="#repo">Get your files into a folder</a><span class="dur">~5 min</span></li>
+    <li><a href="#git">Initialize git &amp; make your first commit</a><span class="dur">~10 min</span></li>
+    <li><a href="#github">Push it up to GitHub</a><span class="dur">~5 min</span></li>
+    <li><a href="#netlify">Connect Netlify &amp; deploy</a><span class="dur">~10 min</span></li>
+    <li><a href="#updates">Updating the site after launch</a><span class="dur">~5 min</span></li>
+  </ol>
+  <ol style="margin-top: 14px; counter-reset: toc 6;">
+    <li><a href="#problems">Problems you'll probably hit</a><span class="dur">reference</span></li>
+    <li><a href="#cheatsheet">Terminal cheat sheet</a><span class="dur">reference</span></li>
+  </ol>
+
+  <p style="margin-top: 24px; padding-top: 18px; border-top: 1px dashed var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.05em; color: var(--bark); opacity: 0.85; max-width: none;">
+    <span style="color: var(--amber-deep); font-weight: 600;">↳ Note:</span> Pointing kylewebear.com at Netlify isn't covered here — see your Sourdough Database guide, the steps are identical.
+  </p>
+</nav>
+
+<!-- ============ CHAPTER 1 — PREP ============ -->
+<section id="prep" class="chapter">
+  <span class="chapter-label">Chapter 01 · Prep work</span>
+  <h2 class="chapter-title">Get your <em>tools sharpened</em>.</h2>
+  <p class="chapter-intro">You'll need three accounts and one tool installed. If you already did this for Sourdough Database, skim it and skip to chapter 2 — you're good.</p>
+
+  <div class="step">
+    <h3>A GitHub account</h3>
+    <p>This is where your code lives. Free forever for public repos. Sign up at <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>. Pick a username you don't mind being public — mine is recommended to be something like <code class="inline">kylewebear</code>.</p>
+  </div>
+
+  <div class="step">
+    <h3>A Netlify account</h3>
+    <p>This is what makes your site visible on the internet. Free tier is more than enough. Sign up at <a href="https://app.netlify.com/signup" target="_blank" rel="noopener">app.netlify.com/signup</a> — and choose <strong>"Sign up with GitHub"</strong> when offered. It saves time later.</p>
+  </div>
+
+  <div class="step">
+    <h3>Git installed on your Mac</h3>
+    <p>Open Terminal (⌘ + Space, type "Terminal", hit return). Paste this and press return:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">check git</span>
+        <button class="copy-btn" data-copy="git --version">Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git --version
+<span class="out">git version 2.43.0  </span><span class="comment"># your number may differ — that's fine</span></div>
+    </div>
+    <p>If it prints a version, you're done. If it says "command not found" or pops up a dialog asking to install developer tools, click <strong>Install</strong> and wait a few minutes. When it finishes, run <code class="inline">git --version</code> again.</p>
+  </div>
+
+  <div class="step">
+    <h3>A code editor (optional but helpful)</h3>
+    <p><a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VS Code</a> is free and the safest pick if you don't already have one. You don't strictly need it — you can edit HTML in TextEdit if you're feeling rugged — but it'll save you headaches.</p>
+  </div>
+
+  <div class="callout tip">
+    <span class="label">Tip · git config (one-time)</span>
+    <p>Tell git who you are so your commits aren't anonymous. Run these once, ever, on this machine:</p>
+    <div class="terminal" style="margin-top:12px">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">git identity</span>
+        <button class="copy-btn" data-copy='git config --global user.name "Kyle Weber"
+git config --global user.email "your@email.com"'>Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git config --global user.name <span class="out">"Kyle Weber"</span>
+<span class="prompt">$ </span>git config --global user.email <span class="out">"your@email.com"</span></div>
+    </div>
+    <p style="margin-top:12px">Use the same email you'll use for GitHub.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHAPTER 2 — GET YOUR FILES INTO A FOLDER ============ -->
+<section id="repo" class="chapter">
+  <span class="chapter-label">Chapter 02 · Files</span>
+  <h2 class="chapter-title">Get the files into <em>one folder</em>.</h2>
+  <p class="chapter-intro">Before git, just pile your stuff up neatly.</p>
+
+  <div class="step">
+    <h3>Make a project folder</h3>
+    <p>I recommend somewhere visible like your Desktop or Documents. Call it something obvious — <code class="inline">kylewebear-com</code> works.</p>
+  </div>
+
+  <div class="step">
+    <h3>Move the right files in</h3>
+    <p>Drag the four files I gave you into that folder, then rename them so the file system knows what's what:</p>
+    <ul>
+      <li><code class="inline">kylewebear-index.html</code> → rename to <code class="inline">index.html</code></li>
+      <li><code class="inline">kylewebear-og-image.png</code> → rename to <code class="inline">og-image.png</code></li>
+      <li><code class="inline">kylewebear-favicon.svg</code> → rename to <code class="inline">favicon.svg</code></li>
+    </ul>
+    <p>Your folder should now look like this:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">kylewebear-com/</span>
+      </div>
+      <div class="terminal-body">kylewebear-com/
+├── index.html
+├── og-image.png
+└── favicon.svg</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Important · the filename matters</span>
+    <p>The HTML file <strong>must</strong> be named exactly <code class="inline">index.html</code>. That's the file Netlify (and every web host) looks for when someone visits your domain. Capitalization counts: <code class="inline">Index.html</code> and <code class="inline">INDEX.HTML</code> are different files as far as the web is concerned.</p>
+  </div>
+
+  <div class="step">
+    <h3>Sanity check — open it in a browser</h3>
+    <p>Double-click <code class="inline">index.html</code>. It should open in your default browser at a <code class="inline">file://</code> address and look exactly like the version I showed you. The OG image and favicon don't render at file:// URLs the way they do online, so don't worry if those look off — they'll work once deployed.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHAPTER 3 — INIT GIT ============ -->
+<section id="git" class="chapter">
+  <span class="chapter-label">Chapter 03 · Local git</span>
+  <h2 class="chapter-title">Tell git what to <em>track</em>.</h2>
+  <p class="chapter-intro">Git is a time machine for your folder. You take "snapshots" (called commits) so you can roll back if you wreck something. Here's how to start.</p>
+
+  <div class="step">
+    <h3>Open the folder in Terminal</h3>
+    <p>The fastest trick on Mac: in Finder, right-click your <code class="inline">kylewebear-com</code> folder and choose <strong>"New Terminal at Folder"</strong>. Terminal opens already inside the folder.</p>
+    <p>If that's not enabled, open Terminal manually and use <code class="inline">cd</code> to navigate:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">navigate</span>
+        <button class="copy-btn" data-copy="cd ~/Desktop/kylewebear-com">Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>cd ~/Desktop/kylewebear-com  <span class="comment"># adjust path if it's elsewhere</span>
+<span class="prompt">$ </span>ls
+<span class="out">favicon.svg    index.html    og-image.png</span></div>
+    </div>
+    <p>The <code class="inline">ls</code> command lists the folder contents. If you see your three files, you're in the right place.</p>
+  </div>
+
+  <div class="step">
+    <h3>Initialize git</h3>
+    <p>This creates a hidden <code class="inline">.git</code> folder that does the actual time-machining. You only do this once per project.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">init repo</span>
+        <button class="copy-btn" data-copy="git init -b main">Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git init -b main
+<span class="out">Initialized empty Git repository in /Users/kyle/Desktop/kylewebear-com/.git/</span></div>
+    </div>
+    <p>The <code class="inline">-b main</code> bit tells git to call the default branch <code class="inline">main</code> instead of the older <code class="inline">master</code>. GitHub uses <code class="inline">main</code>, so it's smoother to start there.</p>
+  </div>
+
+  <div class="step">
+    <h3>Stage and commit your files</h3>
+    <p>Two steps: <code class="inline">add</code> tells git "track these," <code class="inline">commit</code> takes the snapshot.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">first commit</span>
+        <button class="copy-btn" data-copy='git add .
+git commit -m "Initial commit — bear is online"'>Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git add .
+<span class="prompt">$ </span>git commit -m <span class="out">"Initial commit — bear is online"</span>
+<span class="out">[main (root-commit) a1b2c3d] Initial commit — bear is online
+ 3 files changed, 1500 insertions(+)</span></div>
+    </div>
+    <p>The <code class="inline">.</code> in <code class="inline">git add .</code> means "everything in this folder." The <code class="inline">-m</code> flag attaches a message describing what you did — keep these short and meaningful, future you will thank present you.</p>
+  </div>
+
+  <div class="callout tip">
+    <span class="label">Tip · checking what git sees</span>
+    <p>Anytime you want to know what git is tracking or what's changed, run <code class="inline">git status</code>. This is your most-used command. Run it often.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHAPTER 4 — PUSH TO GITHUB ============ -->
+<section id="github" class="chapter">
+  <span class="chapter-label">Chapter 04 · GitHub</span>
+  <h2 class="chapter-title">Send it <em>up the mountain</em>.</h2>
+  <p class="chapter-intro">Right now your code only exists on your laptop. Now you'll push it to GitHub so the internet (and Netlify) can see it.</p>
+
+  <div class="step">
+    <h3>Create a new repo on GitHub</h3>
+    <p>Go to <a href="https://github.com/new" target="_blank" rel="noopener">github.com/new</a>. Fill it out like this:</p>
+    <ul>
+      <li><strong>Repository name:</strong> <code class="inline">kylewebear-com</code> (or whatever — it doesn't have to match your folder name, but it's nice when it does)</li>
+      <li><strong>Description:</strong> "My personal website" (optional)</li>
+      <li><strong>Public</strong> — keep this. Public repos are free forever and there's nothing sensitive in here.</li>
+      <li><strong>Do NOT</strong> check "Add a README" or "Add .gitignore" or "Choose a license." Adding any of these creates a commit on GitHub that conflicts with your local repo. Leave them all unchecked.</li>
+    </ul>
+    <p>Click <strong>"Create repository"</strong>. GitHub will show you a page with setup instructions — ignore them, the right ones are below.</p>
+  </div>
+
+  <div class="step">
+    <h3>Connect your local repo to GitHub</h3>
+    <p>On that GitHub page, copy the URL ending in <code class="inline">.git</code> (it looks like <code class="inline">https://github.com/kylewebear/kylewebear-com.git</code>). Then back in Terminal:</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">link remote</span>
+        <button class="copy-btn" data-copy="git remote add origin https://github.com/YOUR-USERNAME/kylewebear-com.git">Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git remote add origin https://github.com/YOUR-USERNAME/kylewebear-com.git</div>
+    </div>
+    <p>Replace <code class="inline">YOUR-USERNAME</code> and the repo name with whatever yours are. <code class="inline">origin</code> is git's default nickname for "the main remote copy" — you'll see it everywhere.</p>
+  </div>
+
+  <div class="step">
+    <h3>Push your code up</h3>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">push</span>
+        <button class="copy-btn" data-copy="git push -u origin main">Copy</button>
+      </div>
+      <div class="terminal-body"><span class="prompt">$ </span>git push -u origin main
+<span class="out">Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 285.21 KiB | 8.00 MiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0)
+To https://github.com/kylewebear/kylewebear-com.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.</span></div>
+    </div>
+    <p>The <code class="inline">-u</code> flag links your local <code class="inline">main</code> branch to the remote one, so future pushes are just <code class="inline">git push</code> with no arguments.</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Authentication · the password thing</span>
+    <p>GitHub doesn't accept your account password for git pushes anymore. The first time you push, macOS will pop up an authentication dialog — pick <strong>"Sign in with your browser"</strong> and follow the prompts. After that, your Mac's keychain remembers and you won't have to do it again.</p>
+    <p>If no dialog appears and Terminal prompts you for a password, see the troubleshooting section — you'll need a Personal Access Token.</p>
+  </div>
+
+  <div class="step">
+    <h3>Verify it landed</h3>
+    <p>Refresh the GitHub repo page in your browser. You should see your three files. If you do, that part's done — your code is on GitHub.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHAPTER 5 — NETLIFY ============ -->
+<section id="netlify" class="chapter">
+  <span class="chapter-label">Chapter 05 · Netlify</span>
+  <h2 class="chapter-title">Plug GitHub into <em>Netlify</em>.</h2>
+  <p class="chapter-intro">This is the magic part. Once connected, every push to GitHub auto-deploys to your live site within a minute or two.</p>
+
+  <div class="step">
+    <h3>Start a new site</h3>
+    <p>Sign in at <a href="https://app.netlify.com" target="_blank" rel="noopener">app.netlify.com</a>. On the dashboard, click <strong>"Add new site"</strong> → <strong>"Import an existing project."</strong></p>
+  </div>
+
+  <div class="step">
+    <h3>Choose GitHub as the source</h3>
+    <p>Click <strong>"Deploy with GitHub."</strong> Authorize Netlify to access your repos when asked. You can either grant access to all your repos, or just specific ones — picking <strong>only this one</strong> is the more cautious choice if you'd prefer.</p>
+  </div>
+
+  <div class="step">
+    <h3>Pick the repo</h3>
+    <p>Find <code class="inline">kylewebear-com</code> in the list and click it.</p>
+  </div>
+
+  <div class="step">
+    <h3>Confirm build settings</h3>
+    <p>Netlify will show you a settings screen. Since this is just plain HTML, leave everything blank or default:</p>
+    <ul>
+      <li><strong>Branch to deploy:</strong> <code class="inline">main</code> (should be auto-filled)</li>
+      <li><strong>Build command:</strong> leave empty</li>
+      <li><strong>Publish directory:</strong> leave empty (or put <code class="inline">.</code> if it complains)</li>
+    </ul>
+    <p>Click <strong>"Deploy site."</strong></p>
+  </div>
+
+  <div class="step">
+    <h3>Wait ~30 seconds</h3>
+    <p>Netlify will build (which for an HTML-only site means just copying files) and assign you a random URL like <code class="inline">curious-bear-a1b2c3.netlify.app</code>. Click it. Your site is live.</p>
+  </div>
+
+  <div class="callout tip">
+    <span class="label">Tip · rename the Netlify subdomain</span>
+    <p>Auto-generated names are random. To clean it up: in Netlify, go to <strong>Site configuration → Site details → Change site name.</strong> Pick something like <code class="inline">kylewebear</code> and your URL becomes <code class="inline">kylewebear.netlify.app</code>. Useful even if you're going to use a custom domain — it's a clean fallback URL.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHAPTER 6 — UPDATES ============ -->
+<section id="updates" class="chapter">
+  <span class="chapter-label">Chapter 06 · Updates</span>
+  <h2 class="chapter-title">The <em>three-line ritual</em>.</h2>
+  <p class="chapter-intro">Once everything's wired up, updating the site is just three commands. Memorize this rhythm.</p>
+
+  <p>You edit a file. You save. Then in Terminal, from inside your project folder:</p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+      <span class="term-title">the three-line ritual</span>
+      <button class="copy-btn" data-copy='git add .
+git commit -m "Describe what you changed"
+git push'>Copy</button>
+    </div>
+    <div class="terminal-body"><span class="prompt">$ </span>git add .
+<span class="prompt">$ </span>git commit -m <span class="out">"Updated cocktail descriptions"</span>
+<span class="prompt">$ </span>git push</div>
+  </div>
+
+  <p>Within ~30 seconds, Netlify picks up the push and redeploys. You can watch it happen in real time on the Netlify dashboard under <strong>"Deploys."</strong></p>
+
+  <div class="callout tip">
+    <span class="label">Tip · good commit messages</span>
+    <p>Future-you reading "stuff" or "fix" in six months will hate present-you. Write in the imperative — "Add fern illustration," "Fix nav spacing on mobile," "Update OG image." It takes 2 extra seconds and saves real frustration when you need to find when something changed.</p>
+  </div>
+
+  <div class="callout fix">
+    <span class="label">If you mess something up</span>
+    <p>Git keeps every snapshot. To see them: <code class="inline">git log --oneline</code>. To roll the working folder back to a specific snapshot temporarily: <code class="inline">git checkout COMMIT-HASH .</code> (note the trailing dot). To undo and return to latest: <code class="inline">git checkout main -- .</code></p>
+    <p>If everything's truly on fire, you can re-deploy any past version directly from Netlify's "Deploys" tab — find a working deploy and click <strong>"Publish deploy."</strong> No git needed.</p>
+  </div>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ TROUBLESHOOTING ============ -->
+<section id="problems" class="chapter">
+  <span class="chapter-label">Reference · Troubleshooting</span>
+  <h2 class="chapter-title">Problems you'll <em>probably hit</em>.</h2>
+  <p class="chapter-intro">Tap any one to expand. These are the snags that catch most people the first time around.</p>
+
+  <details class="problem">
+    <summary>"git: command not found"</summary>
+    <div class="problem-body">
+      <p>Git isn't installed. Run <code class="inline">xcode-select --install</code> in Terminal — a dialog will pop up. Click "Install" and wait. When it finishes, try <code class="inline">git --version</code> again.</p>
+      <p>If <code class="inline">xcode-select</code> is also missing, install Homebrew first (<a href="https://brew.sh" target="_blank" rel="noopener">brew.sh</a>) and then <code class="inline">brew install git</code>.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>"fatal: not a git repository"</summary>
+    <div class="problem-body">
+      <p>You're running a git command in the wrong folder. Run <code class="inline">pwd</code> to see where you are, then <code class="inline">cd</code> into your project folder. Or you forgot to run <code class="inline">git init</code> first.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>"Permission denied" or password prompt won't accept your password</summary>
+    <div class="problem-body">
+      <p>GitHub stopped accepting account passwords for git operations in 2021. You need either browser-based auth (the dialog from earlier) or a Personal Access Token.</p>
+      <p>To create a token: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token. Give it the <strong>repo</strong> scope, copy the token (you'll only see it once), and paste it as your password the next time git asks.</p>
+      <p>Better long-term: install <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> with <code class="inline">brew install gh</code>, then <code class="inline">gh auth login</code> handles all auth automatically.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>"failed to push some refs" / "rejected — non-fast-forward"</summary>
+    <div class="problem-body">
+      <p>Usually means you accidentally added a README or other file on GitHub when creating the repo, so GitHub has commits your local copy doesn't. Run <code class="inline">git pull origin main --rebase</code> to merge them in, then <code class="inline">git push</code> again.</p>
+      <p>If that gets weird, the easiest fix for a brand-new repo is to delete it on GitHub and recreate it without any starter files, then push fresh.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>Netlify shows "Page not found"</summary>
+    <div class="problem-body">
+      <p>Most common cause: your HTML file isn't named <code class="inline">index.html</code> exactly (case-sensitive), or it's inside a subfolder. Netlify only serves <code class="inline">index.html</code> at the root.</p>
+      <p>Check on GitHub that the file shows as <code class="inline">index.html</code> at the top level of the repo. If it's wrong locally, rename it: <code class="inline">git mv Index.html index.html</code>, then commit and push.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>OG image / social preview isn't showing up when I share the link</summary>
+    <div class="problem-body">
+      <p>First, make sure <code class="inline">og-image.png</code> is at the root of your repo (not in a subfolder), and that your <code class="inline">index.html</code> references it correctly in the meta tags.</p>
+      <p>Then test with a debugger:</p>
+      <ul>
+        <li><a href="https://opengraph.xyz/" target="_blank" rel="noopener">opengraph.xyz</a> — universal preview</li>
+        <li><a href="https://cards-dev.twitter.com/validator" target="_blank" rel="noopener">Twitter Card Validator</a> — for X/Twitter</li>
+        <li><a href="https://www.linkedin.com/post-inspector/" target="_blank" rel="noopener">LinkedIn Post Inspector</a> — refreshes LinkedIn's cache</li>
+      </ul>
+      <p>Important: services like Twitter/iMessage cache previews aggressively. If you update your OG image after sharing the link once, the cached version may stick around for hours/days. The validators force a fresh fetch.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>I edited a file but Netlify isn't redeploying</summary>
+    <div class="problem-body">
+      <p>Did you actually push? Editing locally doesn't deploy anything. Run <code class="inline">git status</code> — if it lists changed files in red, you haven't committed. Run the three-line ritual.</p>
+      <p>If you committed but didn't push, run <code class="inline">git push</code>. Check Netlify's "Deploys" tab to see whether a deploy started after the push.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>"untracked working tree files would be overwritten by checkout"</summary>
+    <div class="problem-body">
+      <p>You've got files in the folder that git doesn't know about, and a git command wants to remove or replace them. Either commit them, or move them out of the folder, or use <code class="inline">git stash</code> to set them aside temporarily.</p>
+    </div>
+  </details>
+
+  <details class="problem">
+    <summary>I committed something I didn't mean to (a password, a giant file, etc.)</summary>
+    <div class="problem-body">
+      <p>If you haven't pushed yet: <code class="inline">git reset HEAD~1</code> undoes your last commit but keeps the file changes.</p>
+      <p>If you already pushed and it's a secret/password — assume the world has seen it. Rotate that password/key immediately. Then for actually removing it from history, see <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository" target="_blank" rel="noopener">GitHub's official guide</a>. It's involved but doable.</p>
+    </div>
+  </details>
+</section>
+
+<div class="ornament"><div class="line"></div><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.5" fill="currentColor"/></svg><div class="line"></div></div>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section id="cheatsheet" class="chapter">
+  <span class="chapter-label">Reference · Cheat sheet</span>
+  <h2 class="chapter-title">Terminal commands, <em>laminated</em>.</h2>
+  <p class="chapter-intro">Every command you'll actually use on a regular basis. Bookmark this page; this section alone is worth more than the rest combined once you're past setup.</p>
+
+  <div class="cheatsheet">
+    <div class="cheat-group">
+      <h4>The Three-Line Ritual (90% of your usage)</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git add .</span>
+        <span class="cheat-desc">Stage every change in the current folder.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git commit -m "message"</span>
+        <span class="cheat-desc">Take a snapshot with a description of what changed.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git push</span>
+        <span class="cheat-desc">Send your commits up to GitHub. Netlify deploys automatically.</span>
+      </div>
+    </div>
+
+    <div class="cheat-group">
+      <h4>Checking what's going on</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git status</span>
+        <span class="cheat-desc">Show what's changed but not yet committed. Run this constantly.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git log --oneline</span>
+        <span class="cheat-desc">List your commit history, one line each. Press <code class="inline" style="font-size:0.85em">q</code> to exit.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git diff</span>
+        <span class="cheat-desc">Show exactly what's changed in your files since the last commit.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git remote -v</span>
+        <span class="cheat-desc">Show where "origin" points to (i.e. which GitHub repo you're connected to).</span>
+      </div>
+    </div>
+
+    <div class="cheat-group">
+      <h4>Navigating the file system</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">pwd</span>
+        <span class="cheat-desc">"Print working directory" — show which folder you're currently in.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">ls</span>
+        <span class="cheat-desc">List files in current folder.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">ls -la</span>
+        <span class="cheat-desc">List ALL files including hidden ones (like <code class="inline" style="font-size:0.85em">.git</code>) with details.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">cd folder-name</span>
+        <span class="cheat-desc">Change into a subfolder.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">cd ..</span>
+        <span class="cheat-desc">Go up one folder.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">cd ~</span>
+        <span class="cheat-desc">Go to your home folder.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">open .</span>
+        <span class="cheat-desc">Open the current folder in Finder. Works on macOS only.</span>
+      </div>
+    </div>
+
+    <div class="cheat-group">
+      <h4>Recovery / Undo</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git restore filename</span>
+        <span class="cheat-desc">Discard unsaved changes to a file (revert it to last commit).</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git restore .</span>
+        <span class="cheat-desc">Discard ALL unsaved changes. Use with caution.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git reset HEAD~1</span>
+        <span class="cheat-desc">Undo last commit, keep the changes (so you can re-commit differently).</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git stash</span>
+        <span class="cheat-desc">Set aside changes temporarily to come back to later.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git stash pop</span>
+        <span class="cheat-desc">Bring stashed changes back.</span>
+      </div>
+    </div>
+
+    <div class="cheat-group">
+      <h4>One-time setup</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git init -b main</span>
+        <span class="cheat-desc">Start tracking a new project. Run once per project.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git remote add origin URL</span>
+        <span class="cheat-desc">Connect local repo to GitHub repo. Run once per project.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git push -u origin main</span>
+        <span class="cheat-desc">First push — sets up tracking. After this, just <code class="inline" style="font-size:0.85em">git push</code>.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git config --global user.name "..."</span>
+        <span class="cheat-desc">Set your git username. Run once ever, on this machine.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">git config --global user.email "..."</span>
+        <span class="cheat-desc">Set your git email. Run once ever, on this machine.</span>
+      </div>
+    </div>
+
+    <div class="cheat-group">
+      <h4>Terminal lifesavers</h4>
+      <div class="cheat-row">
+        <span class="cheat-cmd">↑ (up arrow)</span>
+        <span class="cheat-desc">Recall the last command you ran. Keep tapping for older ones.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">Tab</span>
+        <span class="cheat-desc">Auto-complete the file or folder name you're typing.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">Ctrl + C</span>
+        <span class="cheat-desc">Cancel whatever is currently running.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">Ctrl + L</span>
+        <span class="cheat-desc">Clear the terminal screen. Same as typing <code class="inline" style="font-size:0.85em">clear</code>.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">clear</span>
+        <span class="cheat-desc">Clear the screen. Cleaner workspace, same scrollback.</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-cmd">history</span>
+        <span class="cheat-desc">Show all the commands you've ever run.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Field Notes № 02 · <span class="amber">For Kyle</span>, with love and pawprints<br>
+    <span style="opacity:0.6">No bears were harmed in the publishing of this site.</span>
+  </div>
+</footer>
+
+<script>
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1800);
+      } catch (err) {
+        // fallback for very old browsers
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
