@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — That bear isn't here · Kyle Webear</title>
+<meta name="description" content="The page you're looking for has wandered off. Probably foraging.">
+
+<!-- Reuse the same favicon as main site -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%232d4a2b'/%3E%3Ctext x='16' y='22' font-family='Georgia, serif' font-size='20' font-weight='700' font-style='italic' fill='%23f3ecdc' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream: #f3ecdc;
+    --cream-2: #ece4cf;
+    --paper: #faf5e8;
+    --moss: #2d4a2b;
+    --moss-deep: #1f3520;
+    --sage: #8a9a7b;
+    --sage-soft: #c5cdb4;
+    --amber: #c8842c;
+    --amber-deep: #9a5d1c;
+    --bark: #3d2e1f;
+    --ink: #1d1a14;
+    --rule: rgba(29, 26, 20, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Paper grain overlay (matching main site) */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.32;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 32px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .container {
+    max-width: 720px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* The 404 number, big and Fraunces-y */
+  .num {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(140px, 26vw, 280px);
+    line-height: 0.85;
+    color: var(--moss);
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+    position: relative;
+    display: inline-block;
+  }
+
+  /* The middle 0 becomes a paw print */
+  .num .paw-zero {
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    vertical-align: -0.05em;
+    position: relative;
+    margin: 0 -0.04em;
+  }
+  .num .paw-zero svg {
+    width: 100%;
+    height: 100%;
+    color: var(--moss);
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .num:hover .paw-zero svg {
+    transform: rotate(-12deg) scale(1.05);
+  }
+
+  .kicker {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .kicker .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 80, 'WONK' 1;
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--moss);
+  }
+
+  .lede {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80;
+    font-size: clamp(20px, 2.4vw, 24px);
+    line-height: 1.45;
+    color: var(--bark);
+    margin-bottom: 12px;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sub {
+    font-family: 'Newsreader', serif;
+    font-size: 17px;
+    color: var(--bark);
+    opacity: 0.85;
+    margin-bottom: 44px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: var(--moss);
+    color: var(--cream);
+    text-decoration: none;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+  .cta:hover {
+    background: var(--moss-deep);
+    transform: translateY(-2px);
+  }
+  .cta svg { transition: transform 0.25s ease; }
+  .cta:hover svg { transform: translateX(3px); }
+
+  /* Field notes box: rotating bear excuses */
+  .field-note {
+    margin-top: 60px;
+    padding: 24px 28px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    position: relative;
+  }
+  .field-note .note-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .field-note .note-label svg { color: var(--moss); }
+  .field-note .excuse {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'SOFT' 80;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--ink);
+    font-style: italic;
+    min-height: 50px;
+    transition: opacity 0.4s ease;
+  }
+  .field-note .excuse.fading { opacity: 0; }
+  .field-note .reroll {
+    margin-top: 14px;
+    background: none;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--moss);
+    cursor: pointer;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .field-note .reroll:hover {
+    color: var(--amber-deep);
+    border-color: var(--amber);
+  }
+
+  /* Decorative paw print trail in the background */
+  .pawtrail {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .pawtrail svg {
+    position: absolute;
+    color: var(--moss);
+    opacity: 0.1;
+  }
+  .pawtrail .p1 { top: 12%; left: 6%; transform: rotate(-25deg); }
+  .pawtrail .p2 { top: 22%; left: 14%; transform: rotate(-15deg); }
+  .pawtrail .p3 { top: 65%; right: 8%; transform: rotate(20deg); }
+  .pawtrail .p4 { top: 78%; right: 16%; transform: rotate(35deg); }
+  .pawtrail .p5 { bottom: 14%; left: 10%; transform: rotate(-40deg); }
+
+  /* Decorative leaves in corners */
+  .leaf-deco {
+    position: absolute;
+    color: var(--sage);
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .leaf-deco.tl { top: -15px; left: -10px; transform: rotate(-25deg); }
+  .leaf-deco.br { bottom: 30px; right: 24px; transform: rotate(150deg); }
+
+  /* Footer */
+  footer {
+    padding: 30px 32px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bark);
+    opacity: 0.6;
+    position: relative;
+    z-index: 2;
+  }
+  footer a {
+    color: var(--moss);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+  }
+  footer a:hover { color: var(--amber-deep); border-bottom-color: var(--amber); }
+
+  ::selection { background: var(--amber); color: var(--cream); }
+
+  @media (max-width: 600px) {
+    .pawtrail { display: none; }
+    .leaf-deco { display: none; }
+    .field-note { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-paw" viewBox="0 0 100 100">
+      <path d="M 30,52 Q 22,52 22,62 Q 22,76 30,82 Q 40,90 50,90 Q 60,90 70,82 Q 78,76 78,62 Q 78,52 70,52 Q 60,50 50,50 Q 40,50 30,52 Z" fill="currentColor"/>
+      <ellipse cx="22" cy="42" rx="6" ry="9" fill="currentColor" transform="rotate(-25 22 42)"/>
+      <ellipse cx="34" cy="32" rx="7" ry="11" fill="currentColor" transform="rotate(-12 34 32)"/>
+      <ellipse cx="50" cy="28" rx="7.5" ry="12" fill="currentColor"/>
+      <ellipse cx="66" cy="32" rx="7" ry="11" fill="currentColor" transform="rotate(12 66 32)"/>
+      <ellipse cx="78" cy="42" rx="6" ry="9" fill="currentColor" transform="rotate(25 78 42)"/>
+      <ellipse cx="17" cy="29" rx="1.8" ry="3.5" fill="currentColor" transform="rotate(-25 17 29)"/>
+      <ellipse cx="30" cy="17" rx="2" ry="4" fill="currentColor" transform="rotate(-12 30 17)"/>
+      <ellipse cx="50" cy="13" rx="2.2" ry="4.2" fill="currentColor"/>
+      <ellipse cx="70" cy="17" rx="2" ry="4" fill="currentColor" transform="rotate(12 70 17)"/>
+      <ellipse cx="83" cy="29" rx="1.8" ry="3.5" fill="currentColor" transform="rotate(25 83 29)"/>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 60 80">
+      <path d="M30 5 C 50 25, 50 55, 30 75 C 10 55, 10 25, 30 5 Z" fill="currentColor"/>
+      <path d="M30 10 L 30 72" stroke="rgba(0,0,0,0.2)" stroke-width="1" fill="none"/>
+      <path d="M30 25 L 42 22 M30 38 L 44 36 M30 50 L 42 50 M30 25 L 18 22 M30 38 L 16 36 M30 50 L 18 50" stroke="rgba(0,0,0,0.15)" stroke-width="1" fill="none"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16">
+      <path d="M2 8 L 14 8 M9 3 L 14 8 L 9 13" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Decorative paw trail in background -->
+<div class="pawtrail" aria-hidden="true">
+  <svg class="p1" width="32" height="32"><use href="#i-paw"/></svg>
+  <svg class="p2" width="22" height="22"><use href="#i-paw"/></svg>
+  <svg class="p3" width="28" height="28"><use href="#i-paw"/></svg>
+  <svg class="p4" width="20" height="20"><use href="#i-paw"/></svg>
+  <svg class="p5" width="26" height="26"><use href="#i-paw"/></svg>
+</div>
+
+<!-- Corner leaves -->
+<svg class="leaf-deco tl" width="60" height="80" aria-hidden="true"><use href="#i-leaf"/></svg>
+<svg class="leaf-deco br" width="40" height="54" aria-hidden="true"><use href="#i-leaf"/></svg>
+
+<main>
+  <div class="container">
+    <div class="kicker">
+      <span class="dot"></span>
+      Error 404 · Page not found
+    </div>
+
+    <div class="num" aria-label="404">
+      4<span class="paw-zero"><svg aria-hidden="true"><use href="#i-paw"/></svg></span>4
+    </div>
+
+    <h1>That bear isn't <em>here</em>.</h1>
+
+    <p class="lede">
+      You followed a trail, the trail ended, the trail does not always end where the bear ended up.
+    </p>
+
+    <p class="sub">
+      It happens. Pages get renamed, links rot, bears wander. Probably nothing you did wrong — and definitely nothing the bear feels guilty about.
+    </p>
+
+    <a href="/" class="cta">
+      Back to the den
+      <svg width="14" height="14"><use href="#i-arrow"/></svg>
+    </a>
+
+    <!-- Field note: rotating "bear excuses" for what happened to the page -->
+    <aside class="field-note">
+      <div class="note-label">
+        <svg width="12" height="12"><use href="#i-paw"/></svg>
+        Field note · suspected cause
+      </div>
+      <p class="excuse" id="excuse">The bear is currently napping on this URL.</p>
+      <button class="reroll" id="reroll" type="button">Suggest another reason →</button>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <a href="/">kylewebear.com</a> · No bears were harmed in the breaking of this link
+</footer>
+
+<script>
+  const excuses = [
+    "The bear is currently napping on this URL.",
+    "Page wandered into the woods and didn't leave a forwarding address.",
+    "The bear ate it. Nothing personal.",
+    "Last seen heading north. Following berries.",
+    "Page hibernating until further notice.",
+    "Currently being foraged. Try back in spring.",
+    "Bear knocked over the URL while reaching for honey. Honestly relatable.",
+    "It is not lost. It is exactly where it wants to be — which is not here.",
+    "The trail markers have been chewed off. We suspect a bear.",
+    "Page wandered off mid-thought. ADHD bear energy. We get it.",
+    "404: bear was here, bear has moved on.",
+    "URL is currently underwater catching salmon.",
+    "Bear is using this page as bedding. Will return when molted.",
+    "Page got distracted by something shiny. Will resurface eventually.",
+    "Off-grid. No signal in this part of the forest.",
+    "The bear, when asked, declined to comment.",
+  ];
+
+  const excuseEl = document.getElementById('excuse');
+  const rerollBtn = document.getElementById('reroll');
+  let lastIndex = 0;
+
+  // Pick a random excuse on load (different from the placeholder)
+  function pickExcuse() {
+    let next;
+    do {
+      next = Math.floor(Math.random() * excuses.length);
+    } while (next === lastIndex && excuses.length > 1);
+    lastIndex = next;
+    return excuses[next];
+  }
+
+  // Set initial random excuse
+  excuseEl.textContent = pickExcuse();
+
+  // Reroll handler
+  rerollBtn.addEventListener('click', () => {
+    excuseEl.classList.add('fading');
+    setTimeout(() => {
+      excuseEl.textContent = pickExcuse();
+      excuseEl.classList.remove('fading');
+    }, 400);
+  });
+</script>
+
+</body>
+</html>

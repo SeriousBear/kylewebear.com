@@ -776,12 +776,21 @@
       <path d="M30 10 L 30 72" stroke="rgba(0,0,0,0.25)" stroke-width="1" fill="none"/>
       <path d="M30 25 L 42 22 M30 38 L 44 36 M30 50 L 42 50 M30 25 L 18 22 M30 38 L 16 36 M30 50 L 18 50" stroke="rgba(0,0,0,0.18)" stroke-width="1" fill="none"/>
     </symbol>
-    <symbol id="i-paw" viewBox="0 0 24 24">
-      <ellipse cx="12" cy="16" rx="5" ry="4" fill="currentColor"/>
-      <ellipse cx="6" cy="9" rx="2.2" ry="2.8" fill="currentColor"/>
-      <ellipse cx="18" cy="9" rx="2.2" ry="2.8" fill="currentColor"/>
-      <ellipse cx="3.5" cy="14" rx="1.8" ry="2.2" fill="currentColor"/>
-      <ellipse cx="20.5" cy="14" rx="1.8" ry="2.2" fill="currentColor"/>
+    <symbol id="i-paw" viewBox="0 0 100 100">
+      <!-- Main pad: rounded trapezoid wider at base -->
+      <path d="M 30,52 Q 22,52 22,62 Q 22,76 30,82 Q 40,90 50,90 Q 60,90 70,82 Q 78,76 78,62 Q 78,52 70,52 Q 60,50 50,50 Q 40,50 30,52 Z" fill="currentColor"/>
+      <!-- 5 toe pads, splayed in arc -->
+      <ellipse cx="22" cy="42" rx="6" ry="9" fill="currentColor" transform="rotate(-25 22 42)"/>
+      <ellipse cx="34" cy="32" rx="7" ry="11" fill="currentColor" transform="rotate(-12 34 32)"/>
+      <ellipse cx="50" cy="28" rx="7.5" ry="12" fill="currentColor"/>
+      <ellipse cx="66" cy="32" rx="7" ry="11" fill="currentColor" transform="rotate(12 66 32)"/>
+      <ellipse cx="78" cy="42" rx="6" ry="9" fill="currentColor" transform="rotate(25 78 42)"/>
+      <!-- 5 claws above each toe -->
+      <ellipse cx="17" cy="29" rx="1.8" ry="3.5" fill="currentColor" transform="rotate(-25 17 29)"/>
+      <ellipse cx="30" cy="17" rx="2" ry="4" fill="currentColor" transform="rotate(-12 30 17)"/>
+      <ellipse cx="50" cy="13" rx="2.2" ry="4.2" fill="currentColor"/>
+      <ellipse cx="70" cy="17" rx="2" ry="4" fill="currentColor" transform="rotate(12 70 17)"/>
+      <ellipse cx="83" cy="29" rx="1.8" ry="3.5" fill="currentColor" transform="rotate(25 83 29)"/>
     </symbol>
     <symbol id="i-arrow" viewBox="0 0 16 16">
       <path d="M2 8 L 14 8 M9 3 L 14 8 L 9 13" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -930,7 +939,7 @@
     <h2 class="chapter-title display reveal">A brief field guide to the <em>specimen</em>.</h2>
 
     <div class="ornament reveal">
-      <svg width="20" height="20" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
+      <svg width="20" height="20" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
       <span class="line"></span>
     </div>
 
@@ -945,10 +954,10 @@
         <p>I work from a tiny den in NYC, but I'm rarely in it. If you don't hear back, I'm probably outside.</p>
 
         <div class="traits">
-          <div class="trait"><svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-paw"/></svg> Builds things</div>
-          <div class="trait"><svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-paw"/></svg> Grows things</div>
-          <div class="trait"><svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-paw"/></svg> Ferments things</div>
-          <div class="trait"><svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-paw"/></svg> Stirs things</div>
+          <div class="trait"><svg width="14" height="14" viewBox="0 0 100 100"><use href="#i-paw"/></svg> Builds things</div>
+          <div class="trait"><svg width="14" height="14" viewBox="0 0 100 100"><use href="#i-paw"/></svg> Grows things</div>
+          <div class="trait"><svg width="14" height="14" viewBox="0 0 100 100"><use href="#i-paw"/></svg> Ferments things</div>
+          <div class="trait"><svg width="14" height="14" viewBox="0 0 100 100"><use href="#i-paw"/></svg> Stirs things</div>
         </div>
       </div>
     </div>
@@ -964,7 +973,7 @@
     <h2 class="chapter-title display reveal">Whatever I'm currently <em>obsessed</em> with.</h2>
 
     <div class="ornament reveal">
-      <svg width="20" height="20" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
+      <svg width="20" height="20" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
       <span class="line"></span>
     </div>
 
@@ -1009,7 +1018,7 @@
     <h2 class="chapter-title display reveal">Things that <em>grow</em> when I'm not looking.</h2>
 
     <div class="ornament reveal">
-      <svg width="20" height="20" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
+      <svg width="20" height="20" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
       <span class="line"></span>
     </div>
 
@@ -1205,7 +1214,7 @@
     <h2 class="chapter-title display reveal">Some things should be <em>stirred</em>, gently.</h2>
 
     <div class="ornament reveal">
-      <svg width="20" height="20" viewBox="0 0 24 24" style="color: var(--amber)"><use href="#i-paw"/></svg>
+      <svg width="20" height="20" viewBox="0 0 100 100" style="color: var(--amber)"><use href="#i-paw"/></svg>
       <span class="line" style="background: rgba(245,239,225,0.2)"></span>
     </div>
 
@@ -1370,9 +1379,9 @@
   <div class="footer-inner">
     <div>© 2026 Kyle Weber · No bears were harmed in the making of this site</div>
     <div class="paw-trail" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
-      <svg width="11" height="11" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
-      <svg width="9" height="9" viewBox="0 0 24 24"><use href="#i-paw"/></svg>
+      <svg width="14" height="14" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
+      <svg width="11" height="11" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
+      <svg width="9" height="9" viewBox="0 0 100 100"><use href="#i-paw"/></svg>
     </div>
     <div><a href="#den">Back to the den ↑</a></div>
   </div>
